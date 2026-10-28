@@ -1,0 +1,50 @@
+#!/usr/bin/env php
+<?php
+
+$autoloadPaths = [
+    __DIR__ . '/../../../autoload.php',
+    __DIR__ . '/../vendor/autoload.php',
+];
+foreach ($autoloadPaths as $autoloadPath) {
+    if (file_exists($autoloadPath)) {
+        require_once $autoloadPath;
+        break;
+    }
+}
+
+use Downloader\Exceptions\PageLoaderException;
+use GuzzleHttp\Client;
+use Monolog\Handler\StreamHandler;
+use Monolog\Level;
+use Monolog\Logger;
+
+use function Downloader\Downloader\downloadPage;
+
+$doc = <<<DOC
+Downloads a page with its local resources.
+
+Usage:
+  page-loader (-h|--help)
+  page-loader (-v|--version)
+  page-loader [--output <dir>] [--debug] <url>
+
+Options:
+  -h --help             Show this screen
+  -v --version          Show version
+  -o --output <dir>     Output directory, must exist [default: .]
+  --debug               Write debug log to stderr
+DOC;
+
+$args = Docopt::handle($doc, ['version' => 'page-loader 1.0.0']);
+
+$logger = new Logger('page-loader');
+$logger->pushHandler(new StreamHandler('php://stderr', $args['--debug'] ? Level::Debug : Level::Warning));
+
+try {
+    $path = downloadPage($args['<url>'], $args['--output'], Client::class, $logger);
+} catch (PageLoaderException $error) {
+    fwrite(STDERR, "Error: {$error->getMessage()}\n");
+    exit(1);
+}
+
+echo "Page was downloaded as '{$path}'\n";

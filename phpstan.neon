@@ -1,0 +1,12 @@
+parameters:
+    level: 8
+    paths:
+        - src
+        - bin
+        - tests
+    excludePaths:
+        - tests/fixtures
+    ignoreErrors:
+        # Клиент передаётся именем класса и устроен как Guzzle (get/request), общего интерфейса нет:
+        # в тестах и в автопроверке Хекслета подставляются свои фейковые клиенты.
+        - '#Call to an undefined method object::(get|request)\(\)#'

@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<ruleset name="page-loader">
+    <description>PSR12</description>
+    <arg name="colors"/>
+    <arg value="p"/>
+    <file>src</file>
+    <file>bin</file>
+    <file>tests</file>
+    <exclude-pattern>*/fixtures/*</exclude-pattern>
+    <rule ref="PSR12"/>
+</ruleset>
